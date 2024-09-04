@@ -1,3 +1,4 @@
 *.exe
 data/*.txt
 data/inv_idx/*.txt
+!data/dict.txt

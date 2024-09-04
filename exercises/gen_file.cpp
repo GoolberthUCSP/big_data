@@ -11,7 +11,6 @@ void create_file(string filename, long int n){
     vector<string> words;
     string line;
     while (getline(dict, line)) {
-        if (line.size() < 5) continue;
         words.push_back(line);
     }
     dict.close();

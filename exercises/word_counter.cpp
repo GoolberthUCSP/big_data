@@ -9,7 +9,8 @@
 
 using namespace std;
 
-const long long int NTHREADS = 32; // thread::hardware_concurrency();
+string filename = "file.txt";
+const long long int N_THREADS = 32; // thread::hardware_concurrency();
 const long long int BUFFER_SIZE = 512 * 1024;
 
 void word_counter(unordered_map<string, long long int> &result);
@@ -32,39 +33,39 @@ int main() {
 }
 
 void word_counter(unordered_map<string, long long int> &result) {
-    std::ifstream file("file.txt");
+    ifstream file(filename);
     if (!file.is_open()) {
         cout << "Error opening file" << endl;
         exit(1);
     }
 
-    file.seekg(0, std::ios::end);
+    file.seekg(0, ios::end);
     long long int size = file.tellg();
     cout << "File size: " << size << " bytes" << endl;
     
-    unordered_map<string, long long int> counter[NTHREADS];
-    long long int chunk = size / NTHREADS;
-    thread threads[NTHREADS];
+    unordered_map<string, long long int> counter[N_THREADS];
+    long long int chunk = size / N_THREADS;
+    thread threads[N_THREADS];
 
     long long int last_cut = 0;
     long long int cut = chunk;
-    for (long long int i = 0; i < NTHREADS - 1; i++) {
-        file.seekg(cut, std::ios::beg);
+    for (long long int i = 0; i < N_THREADS - 1; i++) {
+        file.seekg(cut, ios::beg);
         while (file.get() != ' ') {
             cut++;
         }
-        threads[i] = thread(process_chunk, last_cut, cut, std::ref(counter[i]));
+        threads[i] = thread(process_chunk, last_cut, cut, ref(counter[i]));
         last_cut = cut;
         cut += chunk;
     }
-    threads[NTHREADS - 1] = thread(process_chunk, last_cut, size, std::ref(counter[NTHREADS - 1]));
+    threads[N_THREADS - 1] = thread(process_chunk, last_cut, size, ref(counter[N_THREADS - 1]));
     file.close();
 
-    for (int i = 0; i < NTHREADS; i++) {
+    for (int i = 0; i < N_THREADS; i++) {
         threads[i].join();
     }
 
-    for (int i = 0; i < NTHREADS; i++) {
+    for (int i = 0; i < N_THREADS; i++) {
         for (auto it = counter[i].begin(); it != counter[i].end(); it++) {
             result[it->first] += it->second;
         }
@@ -72,10 +73,10 @@ void word_counter(unordered_map<string, long long int> &result) {
 }
 
 void process_chunk(long long int start, long long int end, unordered_map<string, long long int> &counter) {
-    std::ifstream file("file.txt");
+    ifstream file(filename);
     char buffer[BUFFER_SIZE];
     string word;
-    file.seekg(start, std::ios::beg);
+    file.seekg(start, ios::beg);
 
     while (file.tellg() < end) {
         long long int bytes_to_read = min((long long int)BUFFER_SIZE, end - file.tellg());

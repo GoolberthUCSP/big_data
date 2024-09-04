@@ -6,8 +6,8 @@
 
 using namespace std;
 
-const int N_FILES = 100;
-string SIZE_ = "1000"; // in Mb
+const int N_FILES = 1000;
+string SIZE_ = "10000"; // in Mb
 string DIR = "data/inv_idx/";
 
 int main(int argc, char *argv[]) {
