@@ -59,6 +59,17 @@ int main() {
     elapsed = end - start;
 
     cout << "Elapsed time processing inverted_index: " << elapsed.count() << " seconds" << endl;
+    
+    // Save inverted index
+    ofstream fout("data\\inv_idx\\inv_idx.txt");
+    for (auto it : inverted_index){
+        fout << it.first << ',' << it.second.size() << ',';
+        for (auto it2 : it.second){
+            fout << it2.first << ',' << it2.second << ',';
+        }
+        fout << endl;
+    }
+    fout.close();
 
     string query;
     while (true) {
@@ -71,9 +82,13 @@ int main() {
         if (it == inverted_index.end()) {
             cout << "Word not found" << endl;
             continue;
-        }    
+        }
+        int i = 0;    
         for (auto it2 : it->second) {
+            if (i == 20)
+                break;
             cout << "file_" << it2.second << ".txt " << it2.first << endl;
+            i++;
         }
     }
 }
