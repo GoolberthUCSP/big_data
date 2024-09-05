@@ -22,16 +22,6 @@ void word_counter(string filename, unordered_map<string, long long int> &result)
 void process_chunk(string filename, long long int start, long long int end, unordered_map<string, long long int> &counter);
 string DIR = "data/inv_idx/";
 
-vector<string> split(string s, char delimiter) {
-    vector<string> tokens;
-    string token;
-    istringstream tokenStream(s);
-    while (getline(tokenStream, token, delimiter)) {
-        tokens.push_back(token);
-    }
-    return tokens;
-}
-
 int main() {
     setlocale(LC_ALL, "es_CO.UTF-8");
     vector<unordered_map<string, long long int>> word_counts(N_FILES);
