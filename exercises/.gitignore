@@ -2,3 +2,4 @@
 data/*.txt
 data/inv_idx/*.txt
 !data/dict.txt
+!data/stopwords.txt

@@ -16,8 +16,8 @@ mt19937 gen(rd());
 uniform_int_distribution<> dis(0, words_size - 1);
 
 const long int N_FILES = 1000;
-const long int POOL_SIZE = thread::hardware_concurrency();
 const long int DATA_SIZE = 20000; // in Mb
+const long int POOL_SIZE = thread::hardware_concurrency();
 vector<string> words;
 string DIR = "data/inv_idx/";
 

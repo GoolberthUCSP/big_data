@@ -48,12 +48,11 @@ int main() {
     futures.clear();
     
     // PROCESS INVERTED INDEX
-    function<bool(pair<int, long int> &a, pair<int, long int> &b)> order = [](pair<int, long int> &a, pair<int, long int> &b) { return a.second > b.second; };
-    unordered_map<string, multiset<pair<int, long int>, decltype(order)>> inverted_index;
+    std::unordered_map<std::string, std::multiset<std::pair<int, int>, greater<>>> inverted_index;
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < N_FILES; i++) {
         for (auto it = word_counts[i].begin(); it != word_counts[i].end(); it++) {
-            inverted_index[it->first].insert({i, it->second});
+            inverted_index[it->first].insert({it->second, i});
         }
     }
     end = chrono::high_resolution_clock::now();
@@ -73,8 +72,8 @@ int main() {
             cout << "Word not found" << endl;
             continue;
         }    
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++) {
-            cout << "file_" << it2->first << ".txt " << it2->second << endl;
+        for (auto it2 : it->second) {
+            cout << "file_" << it2.second << ".txt " << it2.first << endl;
         }
     }
 }
