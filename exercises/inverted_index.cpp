@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <locale>
+#include <set>
 #include <sstream>
 #include <chrono>
 #include <utility>
@@ -47,24 +48,13 @@ int main() {
     futures.clear();
     
     // PROCESS INVERTED INDEX
-    unordered_map<string, vector<pair<int, long long int>>> inverted_index;
+    function<bool(pair<int, long int> &a, pair<int, long int> &b)> order = [](pair<int, long int> &a, pair<int, long int> &b) { return a.second > b.second; };
+    unordered_map<string, multiset<pair<int, long int>, decltype(order)>> inverted_index;
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < N_FILES; i++) {
         for (auto it = word_counts[i].begin(); it != word_counts[i].end(); it++) {
-            inverted_index[it->first].push_back({i, it->second});
+            inverted_index[it->first].insert({i, it->second});
         }
-    }
-    for (auto it = inverted_index.begin(); it != inverted_index.end(); it++) {
-        futures.emplace_back(
-            pool.enqueue([it, &inverted_index] {
-                sort(it->second.begin(), it->second.end(), [](pair<int, long long int> &a, pair<int, long long int> &b) {
-                    return a.second > b.second;
-                });
-            })
-        );
-    }
-    for (int i = 0; i < N_FILES; i++) {
-        futures[i].get();
     }
     end = chrono::high_resolution_clock::now();
     elapsed = end - start;
