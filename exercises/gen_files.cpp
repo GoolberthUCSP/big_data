@@ -10,17 +10,20 @@
 
 using namespace std;
 
+int words_size = 0;
+random_device rd;
+mt19937 gen(rd());
+uniform_int_distribution<> dis(0, words_size - 1);
+
 const long int N_FILES = 1000;
 const long int POOL_SIZE = thread::hardware_concurrency();
 const long int DATA_SIZE = 20000; // in Mb
 vector<string> words;
-int words_size;
 string DIR = "data/inv_idx/";
 
 void create_file(string filename, long int n_words);
 
 int main(int argc, char *argv[]) {
-    srand(time(NULL));
     long int file_size = DATA_SIZE / N_FILES;
     long int n_words = file_size * 100000;
 
@@ -35,6 +38,7 @@ int main(int argc, char *argv[]) {
     }
     dict.close();
     words_size = words.size();
+    dis = uniform_int_distribution<>(0, words_size - 1);
 
     auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < N_FILES; i++) {
@@ -54,7 +58,7 @@ int main(int argc, char *argv[]) {
 void create_file(string filename, long int n_words) {
     ofstream fout(filename);
     for (long int i = 0; i < n_words; i++) {
-        fout << words[rand() % words_size] << " ";
+        fout << words[dis(gen)] << " ";
     }
     fout.close();
 }

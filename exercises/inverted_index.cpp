@@ -53,7 +53,9 @@ int main() {
     }
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;
-    cout << "Elapsed time processing word_counts: " << elapsed.count() << " seconds" << endl;
+    cout << "Elapsed time processing word_counts   : " << elapsed.count() << " seconds" << endl;
+    futures.clear();
+    
     // PROCESS INVERTED INDEX
     unordered_map<string, vector<pair<int, long long int>>> inverted_index;
     start = chrono::high_resolution_clock::now();
@@ -62,10 +64,39 @@ int main() {
             inverted_index[it->first].push_back({i, it->second});
         }
     }
+    for (auto it = inverted_index.begin(); it != inverted_index.end(); it++) {
+        futures.emplace_back(
+            pool.enqueue([it, &inverted_index] {
+                sort(it->second.begin(), it->second.end(), [](pair<int, long long int> &a, pair<int, long long int> &b) {
+                    return a.second > b.second;
+                });
+            })
+        );
+    }
+    for (int i = 0; i < N_FILES; i++) {
+        futures[i].get();
+    }
     end = chrono::high_resolution_clock::now();
     elapsed = end - start;
 
     cout << "Elapsed time processing inverted_index: " << elapsed.count() << " seconds" << endl;
+
+    string query;
+    while (true) {
+        cout << "Enter a word to search: ";
+        getline(cin, query);
+        if (query == "exit") {
+            break;
+        }
+        auto it = inverted_index.find(query);
+        if (it == inverted_index.end()) {
+            cout << "Word not found" << endl;
+            continue;
+        }    
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++) {
+            cout << "file_" << it2->first << ".txt " << it2->second << endl;
+        }
+    }
 }
 
 void linear_word_counter(string filename, unordered_map<string, long long int> &result) {
